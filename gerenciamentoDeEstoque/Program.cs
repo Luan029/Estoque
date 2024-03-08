@@ -184,6 +184,9 @@ namespace SistemaGerenciamentoEstoque
                     case "5":
                         CadastrarMarca(sistemaEstoque);
                         break;
+                    case "6":
+                        RemoverMarca(sistemaEstoque);
+                        break;
                     case "8":
                         Console.WriteLine("Saindo...");
                         return;
@@ -199,6 +202,11 @@ namespace SistemaGerenciamentoEstoque
         }
         static void CadastrarProduto(SistemaEstoque sistemaEstoque)
         {
+            var marcas = sistemaEstoque.ListarMarcas();
+            if(marcas.Count == 0) {
+                Console.WriteLine("Cadastre pelo menos uma marca no sistema antes de cadastrar um produto.");
+                return ;
+            }
             Console.WriteLine("======= Cadastrar Produto =======");
             Console.Write("Digite o ID do produto: ");
             int id = int.Parse(Console.ReadLine());
@@ -206,7 +214,6 @@ namespace SistemaGerenciamentoEstoque
             string nome = Console.ReadLine();
 
             // Mostra as marcas disponíveis
-            var marcas = sistemaEstoque.ListarMarcas();
             Console.WriteLine("Marcas disponíveis:");
             foreach (var marca in marcas)
             {
@@ -251,6 +258,12 @@ namespace SistemaGerenciamentoEstoque
 
         static void RemoverProduto(SistemaEstoque sistemaEstoque)
         {
+            var produtos = sistemaEstoque.ListarProdutos();
+            if (produtos.Count == 0)
+            {
+                Console.WriteLine("Não há produtos cadastrados.");
+                return;
+            }
             Console.WriteLine("======= Remover Produto =======");
             Console.WriteLine("Digite o ID do produto a ser removido: ");
             int id = int.Parse(Console.ReadLine());
@@ -279,6 +292,12 @@ namespace SistemaGerenciamentoEstoque
         }
         static void EditarProduto(SistemaEstoque sistemaEstoque)
         {
+            var produtos = sistemaEstoque.ListarProdutos();
+            if (produtos.Count == 0)
+            {
+                Console.WriteLine("Não há produtos cadastrados.");
+                return;
+            }
             Console.WriteLine("======= Editar Produto =======");
             Console.Write("Digite o ID do produto a ser editado: ");
             int id = int.Parse(Console.ReadLine());
@@ -335,6 +354,12 @@ namespace SistemaGerenciamentoEstoque
         }
         static void RemoverMarca(SistemaEstoque sistemaEstoque)
         {
+            var marcas = sistemaEstoque.ListarMarcas();
+            if (marcas.Count == 0)
+            {
+                Console.WriteLine("Não existe nenhuma marca no sistema.");
+                return;
+            }
             Console.WriteLine("======= Remover Marca =======");
             Console.Write("Digite o ID da marca a ser removida: ");
             int id = int.Parse(Console.ReadLine());
