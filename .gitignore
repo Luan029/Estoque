@@ -1,4 +1,6 @@
 
-/.vs
+.vs/
 gerenciamentoDeEstoque/obj
 gerenciamentoDeEstoque/bin
+gerenciamentoDeEstoque/.vs/
+
