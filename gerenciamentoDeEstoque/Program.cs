@@ -13,6 +13,10 @@ namespace SistemaGerenciamentoEstoque
 
         public Produto(int id, string nome, Marca marca, int quantidadeEstoque) 
         {
+            Contract.Requires(id > 0, "ID do produto deve ser maior que zero.");
+            Contract.Requires(!string.IsNullOrEmpty(nome), "Nome do produto não pode ser nulo ou vazio.");
+            Contract.Requires(marca != null, "Produto deve ter uma marca associada.");
+            Contract.Requires(quantidadeEstoque >= 0, "Quantidade em estoque deve ser maior ou igual a zero.");
             Id = id;
             Nome = nome;
             Marca = marca; 
@@ -28,6 +32,8 @@ namespace SistemaGerenciamentoEstoque
 
         public Marca(int id, string nome)
         {
+            Contract.Requires(id > 0, "ID da marca deve ser maior que zero.");
+            Contract.Requires(!string.IsNullOrEmpty(nome), "Nome da marca não pode ser nulo ou vazio.");
             Id = id;
             Nome = nome;
         }
@@ -40,9 +46,11 @@ namespace SistemaGerenciamentoEstoque
 
         public void CadastrarProduto(Produto produto, Marca marca)
         {
-            Contract.Requires(!string.IsNullOrEmpty(produto.Nome));
-            Contract.Requires(produto.QuantidadeEstoque >= 0);
-            Contract.Requires(!ProdutosContemId(produto.Id));
+            Contract.Requires(produto != null, "Produto não pode ser nulo.");
+            Contract.Requires(marca != null, "Marca não pode ser nula.");
+            Contract.Requires(!string.IsNullOrEmpty(produto.Nome), "Nome do produto não pode ser nulo ou vazio.");
+            Contract.Requires(produto.QuantidadeEstoque >= 0, "Quantidade em estoque deve ser maior ou igual a zero.");
+            Contract.Requires(!ProdutosContemId(produto.Id), "Produto com o mesmo ID já cadastrado.");
 
             produto.Marca = marca;
             produtos.Add(produto);
@@ -52,7 +60,8 @@ namespace SistemaGerenciamentoEstoque
 
         public void RemoverProduto(int id)
         {
-            Contract.Requires(ProdutosContemId(id));
+            Contract.Requires(id > 0, "ID do produto deve ser maior que zero.");
+            Contract.Requires(ProdutosContemId(id), "Produto com o ID especificado não encontrado.");
             Produto produto = produtos.Find(p => p.Id == id);
             produtos.Remove(produto);
             Console.WriteLine("Produto removido com sucesso!");
@@ -80,27 +89,28 @@ namespace SistemaGerenciamentoEstoque
             switch (opcao)
             {
                 case "1":
-                    Console.WriteLine("Informe o novo nome:");
+                    Console.Write("Informe o novo nome:");
                     string nome = Console.ReadLine();
                     produto.Nome = nome;
-                    Console.WriteLine("Nome do produto atualizado com sucesso!");
+                    Console.Write("Nome do produto atualizado com sucesso!");
                     break;
                 case "2":
-                    Console.WriteLine("Informe o ID da nova marca:");
+                    Console.Write("Informe o ID da nova marca:");
                     int novaMarcaId = int.Parse(Console.ReadLine());
                     Marca novaMarca = marcas.Find(m => m.Id == novaMarcaId);
                     if (novaMarca == null)
                     {
-                        Console.WriteLine("ID de marca não encontrado. Marca não atualizada.");
+                        Console.Write("ID de marca não encontrado. Marca não atualizada.");
                         break;
                     }
                     produto.Marca = novaMarca;
-                    Console.WriteLine("Marca do produto atualizada com sucesso!");
+                    Console.Write("Marca do produto atualizada com sucesso!");
                     break;
                 case "3":
-                    Console.WriteLine("Informe a nova quantidade em estoque:");
+                    Console.Write("Informe a nova quantidade em estoque:");
                     int quantidade = int.Parse(Console.ReadLine());
                     produto.QuantidadeEstoque = quantidade;
+                    Console.Write("Quantidade em estoque do produto atualizado com sucesso!");
                     break;
                 case "4": return;
                 default:
@@ -116,8 +126,9 @@ namespace SistemaGerenciamentoEstoque
 
         public void CadastrarMarca(Marca marca)
         {
-            Contract.Requires(!string.IsNullOrEmpty(marca.Nome));
-            Contract.Requires(!MarcasContemId(marca.Id));
+            Contract.Requires(marca != null, "Marca não pode ser nula.");
+            Contract.Requires(!string.IsNullOrEmpty(marca.Nome), "Nome da marca não pode ser nulo ou vazio.");
+            Contract.Requires(!MarcasContemId(marca.Id), "Marca com o mesmo ID já cadastrada.");
 
             marcas.Add(marca);
             Console.WriteLine("Marca cadastrada com sucesso!");
@@ -125,12 +136,59 @@ namespace SistemaGerenciamentoEstoque
 
         public void RemoverMarca(int id)
         {
-            Contract.Requires(MarcasContemId(id));
+            Contract.Requires(id > 0, "ID da marca deve ser maior que zero.");
+            Contract.Requires(MarcasContemId(id), "Marca com o ID especificado não encontrada.");
             Marca marca = marcas.Find(m => m.Id == id);
+
             marcas.Remove(marca);
+            var produtos = ListarProdutos();
+            var produtosMarca = new List<Produto>();
+            foreach (var produto in produtos)
+            {
+                if (produto.Marca.Id == id)
+                {
+                    produtosMarca.Add(produto);
+                }
+            }
+            if (produtosMarca.Count > 0)
+            {
+                foreach (var produto in produtosMarca)
+                {
+                    produtos.Remove(produto);
+                }
+            }
+            
             Console.WriteLine("Marca removida com sucesso!");
         }
+        public void ListarProdutosPorMarca(int id)
+        {
+           
+            var produtos = ListarProdutos();
+            var produtosMarca = new List<Produto>();
+            foreach(var produto in produtos)
+            {
+                if(produto.Marca.Id == id)
+                {
+                    produtosMarca.Add(produto);
+                }
+            }
+            if(produtosMarca.Count > 0)
+            {
+                Console.WriteLine("Produtos da marca com ID " + id +":");
+                foreach(var produto in produtosMarca)
+                {
+                    Console.WriteLine("Produto:" + produto.Nome +
+                        " Id: " + produto.Id +
+                        " Quantidade em Estoque: " + produto.QuantidadeEstoque +
+                        " Marca:" +produto.Marca.Nome);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Não encontramos nenhum produto cadastrado a esta marca");
+            }
 
+        }
         public List<Marca> ListarMarcas()
         {
             return marcas;
@@ -186,6 +244,9 @@ namespace SistemaGerenciamentoEstoque
                         break;
                     case "6":
                         RemoverMarca(sistemaEstoque);
+                        break;
+                    case "7":
+                        ListarProdutosPorMarca(sistemaEstoque);
                         break;
                     case "8":
                         Console.WriteLine("Saindo...");
@@ -265,7 +326,7 @@ namespace SistemaGerenciamentoEstoque
                 return;
             }
             Console.WriteLine("======= Remover Produto =======");
-            Console.WriteLine("Digite o ID do produto a ser removido: ");
+            Console.Write("Digite o ID do produto a ser removido: ");
             int id = int.Parse(Console.ReadLine());
 
             Console.WriteLine(" __________________________________ ");
@@ -384,6 +445,19 @@ namespace SistemaGerenciamentoEstoque
                     break;
             }
         }
+        static void ListarProdutosPorMarca(SistemaEstoque sistemaEstoque)
+        {
+            var marcas = sistemaEstoque.ListarMarcas();
+            if (marcas.Count == 0)
+            {
+                Console.WriteLine("Não existe nenhuma marca no sistema.");
+                return;
+            }
+            Console.WriteLine("==== Listar Produtos por Marca ====");
+            Console.WriteLine("Digite o ID da marca");
 
+            int id = int.Parse(Console.ReadLine());
+            sistemaEstoque.ListarProdutosPorMarca(id);
+        }
     }
 }
