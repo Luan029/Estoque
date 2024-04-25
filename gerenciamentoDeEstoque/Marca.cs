@@ -20,5 +20,12 @@ namespace SistemaGerenciamentoEstoque
             Contract.Ensures(Id.ToString().Length == 4);
             Contract.Ensures(!string.IsNullOrEmpty(Nome));
         }
+        [ContractInvariantMethod]
+        protected void ObjectInvariant()
+        {
+            Contract.Invariant(Id > 0);
+            Contract.Invariant(Id.ToString().Length == 4);
+            Contract.Invariant(!string.IsNullOrEmpty(Nome));
+        }
     }
 }

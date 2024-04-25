@@ -97,7 +97,10 @@ namespace SistemaGerenciamentoEstoque
             Console.Write("Digite a quantidade em estoque: ");
             int quantidadeEstoque = int.Parse(Console.ReadLine());
 
-            Produto produto = new Produto(id, nome, marcaSelecionada, quantidadeEstoque);
+            Console.Write("Digite o valor do produto: ");
+            double valor = double.Parse(Console.ReadLine());
+
+            Produto produto = new Produto(id, nome, marcaSelecionada, quantidadeEstoque, valor);
 
             Console.WriteLine(" ____________________________________ ");
             Console.WriteLine("|Deseja mesmo cadastrar esse produto?|");
@@ -183,7 +186,8 @@ namespace SistemaGerenciamentoEstoque
                     $"ID: {produto.Id}, " +
                     $"Nome: {produto.Nome}, " +
                     $"Marca: {produto.Marca.Nome}, " +
-                    $"Quantidade em Estoque: {produto.QuantidadeEstoque}"
+                    $"Quantidade em Estoque: {produto.QuantidadeEstoque}, " +
+                    $"Preco: {produto.Preco.ToString("C2")}"
                     );
             }
         }
